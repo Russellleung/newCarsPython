@@ -1,4 +1,3 @@
-import praw
 from dotenv import dotenv_values
 import scrapelink
 import lancedb
@@ -14,7 +13,7 @@ from docling.document_converter import DocumentConverter
 from sitemap import get_sitemap_urls
 from scrapelink import scrapeLinks
 
-url = "https://www.carmagazine.co.uk/car-reviews/byd/sealion-7-suv/"
+url = "https://www.carmagazine.co.uk/"
 
 converter = DocumentConverter()
 config = dotenv_values(".env")
@@ -36,16 +35,35 @@ hybridChunker = HybridChunker(
 
 urls = scrapeLinks(url)
 print(urls)
+seen={url} | set(urls)
 
-docs = []
-for url in urls:
-    try:
-        result = converter.convert(url)
-        if result.document:
-            chunk_iter = hybridChunker.chunk(dl_doc=result.document)
-            chunks.extend(list(chunk_iter))
-    except:
-        print("exception in url: " + url)
+
+depth=4
+
+for _ in range(depth):
+    if urls==None or len(urls)==0:
+        break
+    
+    newUrls=[]
+    for url in urls:
+        try:
+            for newUrl in scrapeLinks(url):
+                if newUrl not in seen:
+                    seen.add(newUrl)
+                    newUrls.append(newUrl)
+        except:
+            print("error in scraping new links for: " + url)
+            
+        try:
+            result = converter.convert(url)
+            if result.document:
+                chunk_iter = hybridChunker.chunk(dl_doc=result.document)
+                chunks.extend(list(chunk_iter))
+        except:
+            print("exception in url: " + url)
+            
+    urls=newUrls
+    print(urls)
 
 db = lancedb.connect("data/lancedb")
 
