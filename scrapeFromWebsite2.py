@@ -16,10 +16,6 @@ import scrapy
 from scrapy.crawler import CrawlerProcess
 import concurrent.futures
 
-
-
-url = "https://www.carmagazine.co.uk/"
-
 converter = DocumentConverter()
 config = dotenv_values(".env")
 model_name = "deepseek-ai/DeepSeek-V2"
@@ -48,7 +44,7 @@ links=set()
 class MySpider(scrapy.Spider):
     
     name = "my_spider"
-    start_urls = [url]
+    start_urls = ["https://techcrunch.com/newsletters/"]
     
     custom_settings = {
         "DEPTH_LIMIT": 4
