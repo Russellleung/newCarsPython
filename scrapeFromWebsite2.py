@@ -44,7 +44,7 @@ links=set()
 class MySpider(scrapy.Spider):
     
     name = "my_spider"
-    start_urls = ["https://techcrunch.com/newsletters/"]
+    start_urls = ["https://www.channelnewsasia.com/"]
     
     custom_settings = {
         "DEPTH_LIMIT": 4
