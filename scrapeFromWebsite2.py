@@ -16,35 +16,25 @@ import scrapy
 from scrapy.crawler import CrawlerProcess
 import concurrent.futures
 
+
 converter = DocumentConverter()
 config = dotenv_values(".env")
 model_name = "deepseek-ai/DeepSeek-V2"
 tokenizer = AutoTokenizer.from_pretrained(model_name, trust_remote_code=True)
 
-# chunks = []
 
 hybridChunker = HybridChunker(
     tokenizer=tokenizer,
-    max_tokens=4096,
+    max_tokens=8192,
     merge_peers=True,
 )
-
-# result = converter.convert(url)
-# chunk_iter = hybridChunker.chunk(dl_doc=result.document)
-# chunks.extend(list(chunk_iter))
-
-
-
-
-import scrapy
-
 
 
 links=set()
 class MySpider(scrapy.Spider):
     
     name = "my_spider"
-    start_urls = ["https://www.channelnewsasia.com/"]
+    start_urls = ["https://www.carmagazine.co.uk/"]
     
     custom_settings = {
         "DEPTH_LIMIT": 4
@@ -69,17 +59,6 @@ class MySpider(scrapy.Spider):
         global links
         links|=urls
 
-    # def save_urls(self, urls):
-    #     # Here you can save the URLs to a file, database, or just print them
-    #     # For example, save to a text file:
-    #     with open("urls.txt", "a") as f:
-    #         for url in urls:
-    #             f.write(url + "\n")
-        
-    #     # Alternatively, just print the URLs
-    #     print(urls)
-
-
 process = CrawlerProcess()
 
 process.crawl(MySpider)
@@ -93,7 +72,7 @@ print("woooohoooo: " + str(len(links)))
 
 db = lancedb.connect("data/lancedb")
 
-# Get the OpenAI embedding function
+# Get the embedding function
 func = (
     get_registry()
     .get("sentence-transformers")
@@ -120,20 +99,16 @@ class Chunks(LanceModel):
     metadata: ChunkMetadata
 
 
-# table = db.create_table(config["table"], schema=Chunks, mode="overwrite")
+table = db.create_table(config["table"], schema=Chunks, mode="overwrite")
 tableName=config["table"]
-if tableName in db:
-    print(f"Table {tableName} already exists.")
-    table = db[tableName]  # Retrieve the existing table object
-else:
-    print(f"Table {tableName} does not exist. Creating it.")
-    table = db.create_table(tableName, schema=Chunks, mode="overwrite")  # Initialize the table
 
-# --------------------------------------------------------------
-# Prepare the chunks for the table
-# --------------------------------------------------------------
-
-# Create table with processed chunks
+# db.drop_all_tables()
+# if tableName in db:
+#     print(f"Table {tableName} already exists.")
+#     table = db[tableName]  # Retrieve the existing table object
+# else:
+#     print(f"Table {tableName} does not exist. Creating it.")
+#     table = db.create_table(tableName, schema=Chunks, mode="overwrite")  # Initialize the table
 
 
 
@@ -196,15 +171,3 @@ def process_in_parallel(urls, num_threads=10):
        
 results = process_in_parallel(links, 10)
 print(results)
-
-# --------------------------------------------------------------
-# Add the chunks to the table (automatically embeds the text)
-# --------------------------------------------------------------
-
-
-# --------------------------------------------------------------
-# Load the table
-# --------------------------------------------------------------
-
-table.to_pandas()
-table.count_rows()

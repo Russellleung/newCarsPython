@@ -13,7 +13,7 @@ from docling.document_converter import DocumentConverter
 from sitemap import get_sitemap_urls
 from scrapelink import scrapeLinks
 
-url = "cars.csv"
+url = "Business-Resume-Example.png"
 
 converter = DocumentConverter()
 config = dotenv_values(".env")
@@ -24,7 +24,7 @@ chunks = []
 
 hybridChunker = HybridChunker(
     tokenizer=tokenizer,
-    max_tokens=4096,
+    max_tokens=8192,
     merge_peers=True,
 )
 
