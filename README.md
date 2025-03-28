@@ -1,5 +1,12 @@
 # newCarsPython
 
+youtube videos
+1. https://youtu.be/4RhD2QiP4Jk
+2. https://youtu.be/oEA-9c8zgoc
+3. https://youtu.be/040q9ze_ios
+4. https://youtu.be/_O4ijmbWg6A
+
+
 You can use this project to ask questions about a specific resource that you have. 
 
 cars.py is for reddit
